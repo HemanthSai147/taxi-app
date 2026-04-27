@@ -3,321 +3,288 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>✈️ India Taxi | Book Your Ride Now</title>
+    <title>✨ Ride INDIA | Smart Taxi Booking ✨</title>
+    <!-- Google Maps API with Places & Distance Matrix -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places,geometry&callback=initMapAsync" async defer></script>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', 'Poppins', 'Roboto', system-ui, -apple-system, sans-serif;
+            font-family: 'Poppins', 'Segoe UI', system-ui, -apple-system, 'Inter', sans-serif;
         }
 
         body {
-            background: linear-gradient(145deg, #f9f3e6 0%, #ffe6d5 100%);
+            background: linear-gradient(145deg, #f0f5ff 0%, #fde8f5 100%);
             min-height: 100vh;
-            padding: 24px 20px;
+            padding: 20px 16px;
         }
 
-        /* Main container */
+        /* main container - glassmorphism + vibrant */
         .app-container {
-            max-width: 560px;
+            max-width: 580px;
             margin: 0 auto;
-            background-color: rgba(255, 255, 255, 0.92);
-            backdrop-filter: blur(2px);
-            border-radius: 56px 56px 48px 48px;
-            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(255, 215, 150, 0.5);
+            background: rgba(255, 255, 255, 0.96);
+            border-radius: 56px;
+            box-shadow: 0 32px 64px rgba(0, 0, 0, 0.12), 0 8px 20px rgba(255, 105, 180, 0.15);
             overflow: hidden;
-            transition: all 0.2s ease;
+            backdrop-filter: blur(2px);
+            transition: all 0.3s ease;
         }
 
-        /* header with Indian theme tricolor touch */
-        .hero-header {
-            background: linear-gradient(135deg, #FF9933 0%, #FFB84D 35%, #FFFFFF 70%, #138808 100%);
-            padding: 24px 24px 32px 24px;
+        /* vibrant header with multi-color */
+        .color-header {
+            background: linear-gradient(115deg, #FF6B6B 0%, #4ECDC4 35%, #FFE66D 70%, #FF9F1C 100%);
+            padding: 28px 24px 36px 24px;
             text-align: center;
-            color: #1e2a2e;
-            border-bottom-left-radius: 32px;
-            border-bottom-right-radius: 32px;
-            box-shadow: 0 8px 18px rgba(0,0,0,0.1);
+            position: relative;
+            border-bottom-left-radius: 48px;
+            border-bottom-right-radius: 48px;
         }
 
-        .hero-header h1 {
-            font-size: 2rem;
+        .color-header h1 {
+            font-size: 2.2rem;
             font-weight: 800;
-            letter-spacing: -0.5px;
-            background: #1f2a1e;
-            background: linear-gradient(135deg, #1f3a2f, #2b4a2c);
+            background: linear-gradient(135deg, #2D3436, #0F2027);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
-            text-shadow: 2px 2px 8px rgba(255,215,0,0.3);
+            text-shadow: 2px 2px 12px rgba(255,255,200,0.6);
+            letter-spacing: -0.5px;
         }
 
-        .hero-header p {
-            font-weight: 500;
-            background: rgba(0,0,0,0.5);
+        .badge {
             display: inline-block;
+            background: #ffffffcc;
+            backdrop-filter: blur(8px);
             padding: 6px 16px;
             border-radius: 60px;
-            backdrop-filter: blur(4px);
-            font-size: 0.85rem;
-            color: white;
-            margin-top: 10px;
-        }
-
-        .tagline {
-            font-size: 0.85rem;
-            margin-top: 10px;
             font-weight: 600;
-            background: #ffefcf;
-            display: inline-block;
-            padding: 4px 18px;
-            border-radius: 40px;
-            color: #c45c00;
+            font-size: 0.8rem;
+            color: #c0392b;
+            margin-top: 10px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
         }
 
-        /* main content */
-        .booking-card {
+        .booking-panel {
             padding: 26px 22px 32px 22px;
         }
 
-        /* ride type selector */
-        .ride-type {
-            background: #fef7e8;
-            border-radius: 60px;
+        /* ride type selector - fresh neon pastel */
+        .ride-flex {
             display: flex;
-            gap: 8px;
+            gap: 12px;
             margin-bottom: 28px;
+            background: #fef6e8;
             padding: 6px;
-            box-shadow: inset 0 1px 3px #0001, 0 4px 8px #0001;
+            border-radius: 80px;
+            box-shadow: inset 0 1px 2px #0001, 0 6px 12px #ffd96630;
         }
 
-        .ride-option {
+        .ride-card {
             flex: 1;
             text-align: center;
             padding: 12px 6px;
-            border-radius: 50px;
+            border-radius: 60px;
             font-weight: 700;
-            font-size: 1rem;
             cursor: pointer;
-            transition: all 0.2s ease;
-            background: transparent;
-            color: #7f5f30;
+            transition: all 0.25s ease;
+            background: white;
+            color: #ad6b35;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 6px;
+            gap: 8px;
+            font-size: 0.95rem;
+            border: 1px solid transparent;
         }
 
-        .ride-option.active {
-            background: #ff9f3d;
+        .ride-card.active {
+            background: linear-gradient(95deg, #FF8A5C, #FF4D6D);
             color: white;
-            box-shadow: 0 4px 12px #ff993380;
+            box-shadow: 0 8px 18px #ff8a5c70;
+            border: none;
         }
 
-        /* form group */
-        .form-group {
-            margin-bottom: 20px;
+        /* location groups */
+        .loc-group {
+            background: #fefaf5;
+            padding: 8px 12px;
+            border-radius: 28px;
+            margin-bottom: 18px;
+            transition: all 0.2s;
         }
 
-        label {
+        .loc-label {
             display: flex;
             align-items: center;
-            gap: 8px;
-            font-size: 0.9rem;
+            gap: 6px;
+            font-size: 0.8rem;
             font-weight: 600;
-            color: #3c2a1f;
-            margin-bottom: 8px;
+            color: #e67e22;
+            margin-bottom: 6px;
         }
 
-        label i {
-            font-size: 1.2rem;
+        .pac-container {
+            border-radius: 28px !important;
+            font-family: 'Poppins', sans-serif;
         }
 
-        input, select {
+        input.pac-target-input {
             width: 100%;
             padding: 14px 18px;
-            border: 1.5px solid #ffe1b3;
-            border-radius: 28px;
+            border: 2px solid #ffe0b5;
+            border-radius: 48px;
             font-size: 1rem;
             background: white;
-            transition: 0.2s;
             outline: none;
-            font-weight: 500;
+            transition: 0.2s;
         }
 
-        input:focus, select:focus {
-            border-color: #ff8822;
-            box-shadow: 0 0 0 3px rgba(255, 137, 34, 0.2);
+        input:focus {
+            border-color: #ff9966;
+            box-shadow: 0 0 0 3px rgba(255, 105, 90, 0.2);
         }
 
-        .location-row {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
+        .distance-chip {
+            background: #eef2ff;
+            border-radius: 60px;
+            padding: 6px 14px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 8px;
+            color: #2c3e66;
         }
 
-        .location-row .form-group {
-            flex: 1;
-        }
-
-        /* fare card */
-        .fare-card {
-            background: linear-gradient(120deg, #faf1e0, #fff7ea);
-            border-radius: 32px;
-            padding: 18px 20px;
-            margin: 20px 0 24px;
+        /* fare & booking card */
+        .vibrant-fare {
+            background: linear-gradient(125deg, #FFF3E0, #FFE9F0);
+            border-radius: 40px;
+            padding: 18px 22px;
+            margin: 16px 0 22px;
             display: flex;
             justify-content: space-between;
-            align-items: baseline;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-            border: 1px solid #ffd9a5;
+            align-items: center;
+            border: 1px solid #ffccbb;
         }
 
-        .fare-label {
+        .fare-text {
             font-weight: 700;
-            color: #a5530e;
             font-size: 1.1rem;
+            color: #bf5712;
         }
 
-        .fare-amount {
-            font-size: 1.9rem;
+        .fare-number {
+            font-size: 2.2rem;
             font-weight: 800;
-            color: #e67e22;
-            letter-spacing: -1px;
+            color: #f43f5e;
         }
 
-        .fare-amount span {
-            font-size: 1rem;
-            font-weight: 600;
-        }
-
-        /* book button */
-        .book-btn {
-            background: linear-gradient(95deg, #ff8c2e, #ff6200);
+        .book-action {
+            background: linear-gradient(100deg, #00c9a7, #00b4aa);
             width: 100%;
             border: none;
-            padding: 16px;
-            border-radius: 50px;
-            font-size: 1.25rem;
+            padding: 18px;
+            border-radius: 60px;
             font-weight: 800;
+            font-size: 1.2rem;
             color: white;
             cursor: pointer;
             transition: 0.2s;
-            box-shadow: 0 10px 18px #ff8c2e60;
+            box-shadow: 0 12px 22px #00c9a770;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
+            gap: 12px;
         }
 
-        .book-btn:active {
-            transform: scale(0.97);
-            box-shadow: 0 4px 10px #ff8c2e80;
+        .book-action:active {
+            transform: scale(0.96);
         }
 
-        /* ride status / message */
-        .ride-message {
-            margin-top: 24px;
-            background: #eef3fc;
+        .message-area {
+            margin: 20px 0 20px;
+            background: #eef7ff;
             border-radius: 32px;
-            padding: 14px 20px;
+            padding: 14px;
             text-align: center;
-            font-weight: 600;
-            color: #1f5e3a;
-            border-left: 6px solid #ff9933;
-            transition: 0.2s;
+            font-weight: 500;
+            border-left: 6px solid #f97316;
+            color: #1f6392;
         }
 
-        /* recent bookings list */
-        .recent-title {
-            margin-top: 28px;
-            font-weight: 700;
-            color: #6b3f00;
-            padding-bottom: 8px;
-            border-bottom: 2px dashed #ffcd94;
+        /* history section bright */
+        .history-header {
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            gap: 8px;
+            margin: 20px 0 12px;
+            padding-bottom: 6px;
+            border-bottom: 3px dotted #fdba74;
         }
 
-        .bookings-list {
+        .history-list {
             list-style: none;
-            margin-top: 12px;
-            max-height: 220px;
+            max-height: 240px;
             overflow-y: auto;
         }
 
-        .bookings-list li {
-            background: #fff9ef;
+        .history-list li {
+            background: #ffffffd9;
             margin-bottom: 10px;
-            padding: 12px 15px;
+            padding: 12px 16px;
             border-radius: 28px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 0.85rem;
+            backdrop-filter: blur(2px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+            border: 1px solid #ffe1b9;
+            transition: all 0.1s;
+        }
+
+        .history-detail {
             font-weight: 500;
-            color: #654321;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-            border: 1px solid #ffeac2;
         }
 
-        .booking-detail {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .booking-route {
-            font-weight: 700;
-            color: #d35400;
-        }
-
-        .booking-fare {
-            background: #ffedd5;
-            padding: 4px 12px;
-            border-radius: 40px;
+        .history-route {
             font-weight: 800;
+            color: #d45a2b;
         }
 
-        .clear-btn {
-            background: none;
+        .history-fare {
+            background: #ffedd2;
+            padding: 4px 14px;
+            border-radius: 50px;
+            font-weight: 700;
+        }
+
+        .clear-history {
+            background: #f1d5b5;
             border: none;
-            font-size: 0.7rem;
-            color: #b97f3b;
-            cursor: pointer;
+            padding: 5px 12px;
+            border-radius: 50px;
             font-weight: 600;
-            background: #fff0dd;
-            padding: 6px 12px;
-            border-radius: 40px;
-            transition: 0.1s;
-        }
-
-        .empty-list {
-            text-align: center;
-            padding: 24px;
-            color: #ab8a62;
-            font-style: italic;
+            cursor: pointer;
         }
 
         footer {
+            background: #fffaef;
             text-align: center;
-            font-size: 0.7rem;
             padding: 14px;
-            background: #fff5e6;
-            color: #b97a49;
+            font-size: 0.7rem;
+            color: #bc6f2c;
         }
 
-        @media (max-width: 480px) {
-            .app-container {
-                border-radius: 40px;
+        @media (max-width: 500px) {
+            .ride-card {
+                font-size: 0.8rem;
             }
-            .booking-card {
-                padding: 20px;
-            }
-            .fare-amount {
-                font-size: 1.6rem;
+            .fare-number {
+                font-size: 1.8rem;
             }
         }
     </style>
@@ -325,373 +292,378 @@
 <body>
 
 <div class="app-container">
-    <div class="hero-header">
-        <h1>🇮🇳 INDIA TAXI</h1>
-        <p>🚖 सुरक्षित • सस्ता • तेज़</p>
-        <div class="tagline">⭐ 4.9 | 1 lakh+ happy rides</div>
+    <div class="color-header">
+        <h1>🌈 Ride INDIA</h1>
+        <div class="badge">🚖 LIVE TRACKING • PAN INDIA</div>
     </div>
 
-    <div class="booking-card">
-        <!-- Ride type selector -->
-        <div class="ride-type" id="rideTypeSelector">
-            <div class="ride-option" data-type="economy">🚗 Economy</div>
-            <div class="ride-option" data-type="sedan">🚙 Sedan</div>
-            <div class="ride-option" data-type="auto">🛺 Auto</div>
+    <div class="booking-panel">
+        <!-- ride types with vibrant look -->
+        <div class="ride-flex" id="rideSelector">
+            <div class="ride-card" data-type="micro">⚡ MICRO</div>
+            <div class="ride-card" data-type="mini">🚗 MINI</div>
+            <div class="ride-card" data-type="prime">✨ PRIME</div>
         </div>
 
-        <!-- Location inputs -->
-        <div class="location-row">
-            <div class="form-group">
-                <label><span>🚩</span> Pickup Location</label>
-                <input type="text" id="pickupInput" placeholder="e.g., Connaught Place, Delhi" value="Mumbai Airport">
-            </div>
-            <div class="form-group">
-                <label><span>🏁</span> Drop Location</label>
-                <input type="text" id="dropInput" placeholder="e.g., Bandra West" value="Gateway of India">
-            </div>
+        <!-- pickup & drop with google maps autocomplete -->
+        <div class="loc-group">
+            <div class="loc-label">📍 PICKUP LOCATION</div>
+            <input type="text" id="pickupInput" placeholder="Enter pickup point (e.g., Churchgate, Mumbai)" autocomplete="off">
+            <div id="pickupDistanceInfo" class="distance-chip">📍 waiting for location...</div>
         </div>
 
-        <div class="location-row">
-            <div class="form-group">
-                <label><span>📅</span> Travel Date</label>
-                <input type="date" id="dateInput">
-            </div>
-            <div class="form-group">
-                <label><span>⏰</span> Time</label>
-                <input type="time" id="timeInput" value="10:30">
-            </div>
+        <div class="loc-group">
+            <div class="loc-label">🏁 DROP LOCATION</div>
+            <input type="text" id="dropInput" placeholder="Enter drop point (e.g., Bandra Kurla Complex)" autocomplete="off">
+            <div id="dropDistanceInfo" class="distance-chip">📍 waiting for location...</div>
         </div>
 
-        <!-- dynamic fare card -->
-        <div class="fare-card">
-            <span class="fare-label">💰 Estimated Fare</span>
-            <span class="fare-amount" id="fareDisplay">₹ 0</span>
+        <!-- dynamic fare panel -->
+        <div class="vibrant-fare">
+            <span class="fare-text">💵 TRIP FARE</span>
+            <span class="fare-number" id="fareAmount">₹ 0</span>
         </div>
+        <div id="distanceKmShow" style="font-size: 0.75rem; text-align: center; margin-top: -10px; margin-bottom: 6px; color:#f97316; font-weight:600;"></div>
 
-        <!-- Book Now button -->
-        <button class="book-btn" id="bookRideBtn">✅ CONFIRM & BOOK RIDE</button>
+        <button class="book-action" id="bookBtn">✅ CONFIRM & BOOK RIDE</button>
+        <div id="statusMsg" class="message-area">🌟 Enter pickup & drop to see instant fare + distance 🌟</div>
 
-        <!-- status / message -->
-        <div id="messageArea" class="ride-message">
-            ✨ Select ride & locations to see fare ✨
+        <div class="history-header">
+            <span>📋 RECENT RIDES</span>
+            <button id="clearHistoryBtn" class="clear-history">🗑️ Clear</button>
         </div>
-
-        <!-- recent bookings section -->
-        <div class="recent-title">
-            📋 Recent Bookings
-            <button id="clearHistoryBtn" style="margin-left: auto; background: none; border: none; font-size: 12px; color:#de7c2a; cursor:pointer;">🗑️ Clear All</button>
-        </div>
-        <ul id="bookingsHistoryList" class="bookings-list">
-            <li class="empty-list">No bookings yet. Book your first ride!</li>
+        <ul id="historyList" class="history-list">
+            <li class="empty-history" style="justify-content: center; opacity:0.7;">✨ No rides yet. Book now!</li>
         </ul>
     </div>
-    <footer>
-        🇮🇳 24x7 Support | Safe Rides | Pan India Service
-    </footer>
+    <footer>🚕 GPS enabled • 24/7 support • Real distance by Google Maps</footer>
 </div>
 
 <script>
-    // ---------- TAXI FARE LOGIC (India specific with dynamic per-km rates) ----------
-    // Base rates per km based on cab type (INR)
-    const farePerKm = {
-        economy: 12,   // ₹12/km
-        sedan: 18,     // ₹18/km
-        auto: 10       // ₹10/km (best for short)
-    };
-    // Base fare (minimum charge)
-    const baseFare = {
-        economy: 40,
-        sedan: 70,
-        auto: 30
-    };
-
-    // Helper: simple distance simulation based on location names (heuristic realistic distances for India)
-    // We'll generate pseudo distance by string length + common city keywords to make it fun & dynamic.
-    function calculateDistance(pickup, drop) {
-        if (!pickup.trim() || !drop.trim()) return 2.0; // default small distance
-
-        // use a seed from combined strings to produce deterministic but "realistic" distance (2 to 28 km)
-        let combined = (pickup + drop).toLowerCase();
-        let hash = 0;
-        for (let i = 0; i < combined.length; i++) {
-            hash = ((hash << 5) - hash) + combined.charCodeAt(i);
-            hash |= 0;
-        }
-        // cities list weighting ( India major cities get longer distances )
-        let longDistanceKeywords = ['delhi', 'mumbai', 'bengaluru', 'chennai', 'kolkata', 'hyderabad', 'pune', 'jaipur', 'ahmedabad', 'lucknow'];
-        let factor = 1.0;
-        for (let kw of longDistanceKeywords) {
-            if (pickup.toLowerCase().includes(kw) && drop.toLowerCase().includes(kw)) {
-                factor = 0.8; // same city moderate
-            } else if (pickup.toLowerCase().includes(kw) || drop.toLowerCase().includes(kw)) {
-                factor = 1.8; // inter-city vibe
-                break;
-            }
-        }
-        // base distance between 3km to 32km
-        let rawDistance = (Math.abs(hash) % 28) + 3;
-        let finalDistance = Math.round((rawDistance * factor + Number.EPSILON) * 10) / 10;
-        // cap between 1.5km and 55km for realistic
-        if (finalDistance < 1.5) finalDistance = 2.0;
-        if (finalDistance > 55) finalDistance = 48;
-        return finalDistance;
-    }
-
-    // calculate total fare based on selected ride type and pickup/drop
-    function calculateFare(rideType, pickup, drop) {
-        const distance = calculateDistance(pickup, drop);
-        const rate = farePerKm[rideType];
-        const base = baseFare[rideType];
-        let total = base + (distance * rate);
-        // Adding rounding + GST representation (just neat integer)
-        total = Math.round(total);
-        // ensure min fare
-        if (rideType === 'auto' && total < 35) total = 35;
-        if (rideType === 'economy' && total < 50) total = 50;
-        if (rideType === 'sedan' && total < 85) total = 85;
-        return { fare: total, distance: distance };
-    }
-
-    // UI state
-    let currentRideType = "economy";   // default economy
+    // ------------------- GLOBALS -------------------
+    let mapApiLoaded = false;
+    let autoCompletePickup, autoCompleteDrop;
+    let pickupPlace = null;
+    let dropPlace = null;
+    let currentDistanceKm = null;      // in km
+    let currentRideType = "mini";       // default MINI (mid)
+    
+    // Fare structure (INR) - vibrant dynamic
+    const baseFare = { micro: 35, mini: 55, prime: 85 };
+    const perKmFare = { micro: 9, mini: 14, prime: 22 };
+    
     let bookingHistory = [];
-
-    // load from localStorage if available
-    function loadHistoryFromStorage() {
-        const stored = localStorage.getItem("indiaTaxiBookings");
+    
+    // ---------- Helper: Load / Save history ----------
+    function loadHistory() {
+        const stored = localStorage.getItem("RideIndiaHistory");
         if (stored) {
             try {
                 bookingHistory = JSON.parse(stored);
                 if (!Array.isArray(bookingHistory)) bookingHistory = [];
             } catch(e) { bookingHistory = []; }
-        } else {
-            // sample initial demo bookings to make UI lively (optional)
+        }
+        if (bookingHistory.length === 0) {
+            // demo colorful bookings
             bookingHistory = [
-                {
-                    id: Date.now() + 101,
-                    rideType: "economy",
-                    pickup: "Indira Gandhi Intl Airport",
-                    drop: "Chandni Chowk",
-                    date: "2025-04-15",
-                    time: "08:45",
-                    fare: 310,
-                    distance: 18.5
-                },
-                {
-                    id: Date.now() + 102,
-                    rideType: "auto",
-                    pickup: "MG Road, Bengaluru",
-                    drop: "Electronic City",
-                    date: "2025-04-14",
-                    time: "18:20",
-                    fare: 128,
-                    distance: 9.8
-                }
+                { id: Date.now()+1, ride: "mini", pickup: "MG Road, Pune", drop: "Shivaji Nagar", distance: 6.2, fare: 139, date: new Date().toLocaleDateString() },
+                { id: Date.now()+2, ride: "micro", pickup: "Connaught Place", drop: "Hauz Khas", distance: 11.4, fare: 129, date: new Date().toLocaleDateString() }
             ];
         }
-        renderBookingHistory();
+        renderHistory();
     }
-
-    function saveHistoryToStorage() {
-        localStorage.setItem("indiaTaxiBookings", JSON.stringify(bookingHistory));
+    
+    function saveHistory() {
+        localStorage.setItem("RideIndiaHistory", JSON.stringify(bookingHistory.slice(0, 12)));
+        renderHistory();
     }
-
-    function renderBookingHistory() {
-        const listContainer = document.getElementById("bookingsHistoryList");
-        if (!listContainer) return;
-        if (bookingHistory.length === 0) {
-            listContainer.innerHTML = '<li class="empty-list">🚖 No bookings yet. Book your first ride!</li>';
+    
+    function renderHistory() {
+        const container = document.getElementById("historyList");
+        if (!container) return;
+        if (!bookingHistory.length) {
+            container.innerHTML = '<li class="empty-history" style="justify-content: center;">🚀 No rides yet. Book now!</li>';
             return;
         }
-        // show latest first
         const reversed = [...bookingHistory].reverse();
-        listContainer.innerHTML = reversed.map(booking => `
+        container.innerHTML = reversed.map(ride => `
             <li>
-                <div class="booking-detail">
-                    <span class="booking-route">${booking.rideType.toUpperCase()} • ${booking.pickup} → ${booking.drop}</span>
-                    <span style="font-size: 0.7rem;">📅 ${booking.date} ⏰ ${booking.time}</span>
+                <div class="history-detail">
+                    <span class="history-route">${ride.ride.toUpperCase()} • ${ride.pickup.substring(0,22)} → ${ride.drop.substring(0,22)}</span><br>
+                    <span style="font-size:11px;">📏 ${ride.distance} km • 📅 ${ride.date}</span>
                 </div>
-                <div class="booking-fare">₹${booking.fare}</div>
+                <div class="history-fare">₹${ride.fare}</div>
             </li>
         `).join('');
     }
-
-    function addBookingToHistory(rideType, pickup, drop, date, time, fare, distance) {
-        const newBooking = {
+    
+    function addToHistory(rideType, pickup, drop, distance, fare) {
+        const newRide = {
             id: Date.now(),
-            rideType: rideType,
+            ride: rideType,
             pickup: pickup,
             drop: drop,
-            date: date,
-            time: time,
+            distance: distance,
             fare: fare,
-            distance: distance
+            date: new Date().toLocaleDateString('en-IN')
         };
-        bookingHistory.unshift(newBooking); // add at beginning
-        // keep max 12 recent bookings to avoid clutter
-        if (bookingHistory.length > 12) bookingHistory.pop();
-        saveHistoryToStorage();
-        renderBookingHistory();
+        bookingHistory.unshift(newRide);
+        if (bookingHistory.length > 10) bookingHistory.pop();
+        saveHistory();
     }
-
-    function clearAllHistory() {
+    
+    function clearHistory() {
         bookingHistory = [];
-        saveHistoryToStorage();
-        renderBookingHistory();
-        showMessage("🧹 All booking history cleared!", "#e6b17e");
+        saveHistory();
+        showMessage("🧹 History cleared!", "#ffe1d9");
     }
-
-    // update fare display and also return calculated fare object
-    function updateFareDisplay() {
-        const pickup = document.getElementById("pickupInput").value;
-        const drop = document.getElementById("dropInput").value;
-        if (!pickup.trim() || !drop.trim()) {
-            document.getElementById("fareDisplay").innerHTML = `₹ --`;
-            return null;
+    
+    // ---------- Google Maps: places & distance matrix ----------
+    function initAutocomplete() {
+        if (!window.google || !window.google.maps) {
+            console.warn("Google Maps not loaded yet, will retry");
+            setTimeout(initAutocomplete, 300);
+            return;
         }
-        const { fare, distance } = calculateFare(currentRideType, pickup, drop);
-        document.getElementById("fareDisplay").innerHTML = `₹ ${fare}<span> approx</span>`;
-        return { fare, distance };
-    }
-
-    function showMessage(msg, bgColorHint = "#e0f0e8") {
-        const msgDiv = document.getElementById("messageArea");
-        if (!msgDiv) return;
-        msgDiv.innerHTML = `🚕 ${msg}`;
-        msgDiv.style.background = bgColorHint;
-        msgDiv.style.borderLeftColor = "#ff9933";
-        setTimeout(() => {
-            if (msgDiv.innerHTML.includes(msg)) {
-                // keep but not necessary to revert, but better to keep fresh summary
-                setTimeout(() => {
-                    if (document.getElementById("pickupInput").value && document.getElementById("dropInput").value) {
-                        const p = document.getElementById("pickupInput").value;
-                        const d = document.getElementById("dropInput").value;
-                        if (p && d) {
-                            msgDiv.innerHTML = `✅ Ready to book ${currentRideType} ride! Fare updated.`;
-                        } else {
-                            msgDiv.innerHTML = `✨ Select pickup & drop to see fare ✨`;
-                        }
-                    } else {
-                        msgDiv.innerHTML = `📍 Enter pickup & drop locations for exact fare`;
-                    }
-                }, 2800);
+        const inputPickup = document.getElementById("pickupInput");
+        const inputDrop = document.getElementById("dropInput");
+        if (!inputPickup || !inputDrop) return;
+        
+        autoCompletePickup = new google.maps.places.Autocomplete(inputPickup, {
+            componentRestrictions: { country: "in" },
+            fields: ["place_id", "geometry", "formatted_address", "name"]
+        });
+        autoCompleteDrop = new google.maps.places.Autocomplete(inputDrop, {
+            componentRestrictions: { country: "in" },
+            fields: ["place_id", "geometry", "formatted_address", "name"]
+        });
+        
+        autoCompletePickup.addListener("place_changed", () => {
+            const place = autoCompletePickup.getPlace();
+            if (place && place.geometry) {
+                pickupPlace = place;
+                document.getElementById("pickupDistanceInfo").innerHTML = "✅ Pickup selected";
+            } else {
+                pickupPlace = null;
+                document.getElementById("pickupDistanceInfo").innerHTML = "⚠️ Pickup not valid";
             }
-        }, 2500);
+            updateDistanceAndFare();
+        });
+        
+        autoCompleteDrop.addListener("place_changed", () => {
+            const place = autoCompleteDrop.getPlace();
+            if (place && place.geometry) {
+                dropPlace = place;
+                document.getElementById("dropDistanceInfo").innerHTML = "✅ Drop selected";
+            } else {
+                dropPlace = null;
+                document.getElementById("dropDistanceInfo").innerHTML = "⚠️ Drop not valid";
+            }
+            updateDistanceAndFare();
+        });
+        
+        // Manual text change fallback
+        inputPickup.addEventListener("input", () => { pickupPlace = null; document.getElementById("pickupDistanceInfo").innerHTML = "📍 Type or select from list"; updateDistanceAndFare(); });
+        inputDrop.addEventListener("input", () => { dropPlace = null; document.getElementById("dropDistanceInfo").innerHTML = "📍 Type or select from list"; updateDistanceAndFare(); });
+        
+        mapApiLoaded = true;
     }
-
-    // book ride action
+    
+    // distance matrix API call using Google Maps
+    function updateDistanceAndFare() {
+        const pickupElem = document.getElementById("pickupInput");
+        const dropElem = document.getElementById("dropInput");
+        const pickupVal = pickupElem.value.trim();
+        const dropVal = dropElem.value.trim();
+        
+        if (!pickupVal || !dropVal) {
+            document.getElementById("fareAmount").innerHTML = "₹ 0";
+            document.getElementById("distanceKmShow").innerHTML = "";
+            showMessage("📍 Enter both pickup & drop locations", "#fde9e0");
+            currentDistanceKm = null;
+            return;
+        }
+        
+        // If both places have geometry use origin/destination objects else fallback to text string
+        let origin, destination;
+        if (pickupPlace && pickupPlace.geometry) {
+            origin = pickupPlace.geometry.location;
+        } else {
+            origin = pickupVal;
+        }
+        if (dropPlace && dropPlace.geometry) {
+            destination = dropPlace.geometry.location;
+        } else {
+            destination = dropVal;
+        }
+        
+        if (!window.google || !window.google.maps) {
+            fallbackDistance(pickupVal, dropVal);
+            return;
+        }
+        
+        const service = new google.maps.DistanceMatrixService();
+        service.getDistanceMatrix({
+            origins: [origin],
+            destinations: [destination],
+            travelMode: google.maps.TravelMode.DRIVING,
+            unitSystem: google.maps.UnitSystem.METRIC,
+        }, (response, status) => {
+            if (status === "OK" && response.rows[0].elements[0].status === "OK") {
+                const distanceMeters = response.rows[0].elements[0].distance.value;
+                const distanceKm = distanceMeters / 1000;
+                currentDistanceKm = Math.round(distanceKm * 10) / 10;
+                document.getElementById("distanceKmShow").innerHTML = `📏 Distance: ${currentDistanceKm} km (via road)`;
+                document.getElementById("pickupDistanceInfo").innerHTML = `📍 ${pickupVal.substring(0,28)}`;
+                document.getElementById("dropDistanceInfo").innerHTML = `🏁 ${dropVal.substring(0,28)}`;
+                computeFareAndUpdate(currentDistanceKm);
+            } else {
+                // fallback: approximate via text heuristic
+                fallbackDistance(pickupVal, dropVal);
+            }
+        });
+    }
+    
+    // fallback distance heuristic if API fails / no geometry
+    function fallbackDistance(pickup, drop) {
+        let combined = (pickup + drop).toLowerCase();
+        let hash = 0;
+        for (let i=0; i<combined.length; i++) hash = ((hash<<5)-hash)+combined.charCodeAt(i);
+        let raw = (Math.abs(hash) % 38) + 3;
+        if (pickup.toLowerCase().includes("delhi") && drop.toLowerCase().includes("gurgaon")) raw = 28;
+        if (pickup.toLowerCase().includes("mumbai") && drop.toLowerCase().includes("navi mumbai")) raw = 22;
+        let fakeDist = Math.round(raw + (Math.sin(hash) * 4) * 10) / 10;
+        if (fakeDist < 1.2) fakeDist = 2.5;
+        currentDistanceKm = fakeDist;
+        document.getElementById("distanceKmShow").innerHTML = `📏 ~${currentDistanceKm} km (estimated)`;
+        computeFareAndUpdate(currentDistanceKm);
+    }
+    
+    function computeFareAndUpdate(distanceKm) {
+        if (!distanceKm || distanceKm <= 0) {
+            document.getElementById("fareAmount").innerHTML = "₹ 0";
+            return;
+        }
+        const base = baseFare[currentRideType];
+        const perKm = perKmFare[currentRideType];
+        let total = base + (distanceKm * perKm);
+        total = Math.round(total);
+        // ensure minimum fair
+        if (currentRideType === 'micro' && total < 45) total = 45;
+        if (currentRideType === 'mini' && total < 70) total = 70;
+        if (currentRideType === 'prime' && total < 100) total = 100;
+        document.getElementById("fareAmount").innerHTML = `₹ ${total}`;
+        window.currentCalculatedFare = total;
+        showMessage(`✨ ${currentRideType.toUpperCase()} fare: ₹${total} for ${distanceKm}km`, "#efffef");
+    }
+    
+    // show helper message
+    function showMessage(msg, bg) {
+        const msgDiv = document.getElementById("statusMsg");
+        if (msgDiv) {
+            msgDiv.innerHTML = `🚖 ${msg}`;
+            msgDiv.style.background = bg || "#e6f7ff";
+            setTimeout(() => {
+                if (document.getElementById("statusMsg").innerHTML.includes(msg)) {
+                    if (currentDistanceKm) 
+                        msgDiv.innerHTML = `✅ Ready to book ${currentRideType} ride • ${currentDistanceKm} km`;
+                    else
+                        msgDiv.innerHTML = `🌟 Add pickup & drop to start`;
+                }
+            }, 2800);
+        }
+    }
+    
+    // book ride logic
     function bookRide() {
-        const pickup = document.getElementById("pickupInput").value.trim();
-        const drop = document.getElementById("dropInput").value.trim();
-        const date = document.getElementById("dateInput").value;
-        const time = document.getElementById("timeInput").value;
-
-        if (!pickup || !drop) {
-            showMessage("⚠️ Please fill both pickup and drop locations!", "#ffe0cc");
+        const pickupVal = document.getElementById("pickupInput").value.trim();
+        const dropVal = document.getElementById("dropInput").value.trim();
+        if (!pickupVal || !dropVal) {
+            showMessage("⚠️ Please enter both pickup and drop locations!", "#ffe0cc");
             return;
         }
-        if (!date) {
-            showMessage("📅 Please select travel date!", "#ffe0cc");
+        if (!currentDistanceKm || currentDistanceKm <= 0) {
+            showMessage("⚠️ Could not compute distance. Please re-select locations!", "#ffdede");
             return;
         }
-        if (!time) {
-            showMessage("⏰ Please select travel time!", "#ffe0cc");
-            return;
-        }
-
-        // fare recalc for final accuracy
-        const { fare, distance } = calculateFare(currentRideType, pickup, drop);
+        const fare = parseInt(document.getElementById("fareAmount").innerHTML.replace("₹ ", ""));
         if (!fare || fare <= 0) {
-            showMessage("⚠️ Unable to calculate fare, try again!", "#ffdede");
+            showMessage("❌ Fare calculation error, try again", "#ffdede");
             return;
         }
-
-        // Add to history
-        addBookingToHistory(currentRideType, pickup, drop, date, time, fare, distance);
-
-        // Success message with beautiful Indian touch
-        showMessage(`🎉 BOOKING CONFIRMED! ${currentRideType.toUpperCase()} ride from "${pickup}" to "${drop}" | Fare ₹${fare} | Distance ${distance} km. Driver assigned shortly. 🇮🇳`, "#d9f0ec");
-
-        // Optionally clear fields? Not clearing keeps convenience.
-        // Add a fun console log
-        console.log(`🚖 Ride booked: ${currentRideType}, ${pickup} → ${drop}, ₹${fare}`);
+        // add to history
+        addToHistory(currentRideType, pickupVal, dropVal, currentDistanceKm, fare);
+        // success animation message
+        showMessage(`🎉 BOOKED! ${currentRideType.toUpperCase()} from ${pickupVal.substring(0,20)} → ${dropVal.substring(0,20)} • ₹${fare} • Driver will arrive soon! 🚕`, "#d0f0d0");
+        // optional slight reset for fresh not clear, but keep values.
     }
-
-    // event listeners for ride type selection
+    
+    // Ride type selector vibrant
     function initRideSelector() {
-        const options = document.querySelectorAll(".ride-option");
-        options.forEach(opt => {
-            opt.addEventListener("click", (e) => {
-                const type = opt.getAttribute("data-type");
-                if (type) {
-                    currentRideType = type;
-                    // update active class
-                    options.forEach(o => o.classList.remove("active"));
-                    opt.classList.add("active");
-                    // recalc fare and update display
-                    updateFareDisplay();
-                    // show message
-                    const rideName = { economy: "Economy 🚗", sedan: "Sedan 🚙", auto: "Auto 🛺" }[currentRideType];
-                    showMessage(`Selected ${rideName} — great for ${currentRideType === 'auto' ? 'short city rides' : 'comfort travel'}`, "#fff1df");
+        const rideOptions = document.querySelectorAll(".ride-card");
+        rideOptions.forEach(card => {
+            card.addEventListener("click", () => {
+                rideOptions.forEach(c => c.classList.remove("active"));
+                card.classList.add("active");
+                const type = card.getAttribute("data-type");
+                if (type === "micro") currentRideType = "micro";
+                else if (type === "mini") currentRideType = "mini";
+                else if (type === "prime") currentRideType = "prime";
+                if (currentDistanceKm && currentDistanceKm > 0) {
+                    computeFareAndUpdate(currentDistanceKm);
+                } else {
+                    document.getElementById("fareAmount").innerHTML = "₹ 0";
+                    showMessage(`Switched to ${currentRideType.toUpperCase()} — choose locations to see fare`, "#fff0db");
                 }
             });
         });
-        // set default active
-        const defaultActive = document.querySelector('.ride-option[data-type="economy"]');
-        if (defaultActive) defaultActive.classList.add("active");
-        currentRideType = "economy";
+        // set default active: mini
+        const defaultActive = document.querySelector('.ride-card[data-type="mini"]');
+        if(defaultActive) defaultActive.classList.add("active");
+        currentRideType = "mini";
     }
-
-    // event binding for inputs to update fare live
-    function bindInputEvents() {
-        const pickupInput = document.getElementById("pickupInput");
-        const dropInput = document.getElementById("dropInput");
-        const updateFareLive = () => {
-            updateFareDisplay();
-        };
-        pickupInput.addEventListener("input", updateFareLive);
-        dropInput.addEventListener("input", updateFareLive);
-        // also when date/time change, no fare effect but nice
-    }
-
-    // set default date to tomorrow (India local)
-    function setDefaultDate() {
-        const dateInput = document.getElementById("dateInput");
-        if (!dateInput.value) {
-            const today = new Date();
-            const tomorrow = new Date(today);
-            tomorrow.setDate(today.getDate() + 1);
-            const yyyy = tomorrow.getFullYear();
-            const mm = String(tomorrow.getMonth() + 1).padStart(2, '0');
-            const dd = String(tomorrow.getDate()).padStart(2, '0');
-            dateInput.value = `${yyyy}-${mm}-${dd}`;
+    
+    // ---- google maps callback ----
+    window.initMapAsync = function() {
+        initAutocomplete();
+    };
+    
+    // fallback if API takes time OR invalid key
+    function waitForGoogle() {
+        if (window.google && window.google.maps) {
+            initAutocomplete();
+        } else {
+            setTimeout(() => {
+                if (window.google && window.google.maps) initAutocomplete();
+                else {
+                    console.warn("Google Maps not loaded (API key missing?), fallback manual distance only");
+                    document.getElementById("pickupDistanceInfo").innerHTML = "🔁 Manual mode (enter city)";
+                    document.getElementById("dropDistanceInfo").innerHTML = "🔁 Manual mode";
+                    // attach manual distance update to inputs
+                    const p = document.getElementById("pickupInput");
+                    const d = document.getElementById("dropInput");
+                    const updateManual = () => {
+                        if(p.value && d.value) fallbackDistance(p.value, d.value);
+                        else { currentDistanceKm = null; document.getElementById("fareAmount").innerHTML="₹ 0"; document.getElementById("distanceKmShow").innerHTML="";}
+                    };
+                    p.addEventListener("input", updateManual);
+                    d.addEventListener("input", updateManual);
+                }
+            }, 500);
         }
     }
-
-    // driver initial page load and updates
-    function init() {
-        loadHistoryFromStorage();
+    // extra event binding for book button / clear
+    document.addEventListener("DOMContentLoaded", () => {
+        loadHistory();
         initRideSelector();
-        bindInputEvents();
-        setDefaultDate();
-        // initial fare calc based on default pickup/drop (Mumbai airport → Gateway)
-        updateFareDisplay();
-
-        const bookBtn = document.getElementById("bookRideBtn");
-        if (bookBtn) bookBtn.addEventListener("click", bookRide);
-
-        const clearBtn = document.getElementById("clearHistoryBtn");
-        if (clearBtn) clearBtn.addEventListener("click", clearAllHistory);
-
-        // additional: show friendly welcome
+        waitForGoogle();
+        document.getElementById("bookBtn").addEventListener("click", bookRide);
+        document.getElementById("clearHistoryBtn").addEventListener("click", clearHistory);
+        // initial message
         setTimeout(() => {
-            showMessage("🙏 Namaste! Enter trip details & book your safe ride across India", "#f8ede3");
-        }, 300);
-    }
-
-    // start app when DOM ready
-    document.addEventListener("DOMContentLoaded", init);
+            showMessage("🎨 Vibrant India! Use Google suggestions for best distance", "#faf0e6");
+        }, 600);
+    });
 </script>
 </body>
 </html>
