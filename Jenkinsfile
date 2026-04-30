@@ -3,7 +3,7 @@ pipeline {
     stages {
         stage('checkout Code') {
             steps {
-                sh 'checkout scm'
+                git branch: 'main', url: 'https://github.com/HemanthSai147/taxi-app.git'
             }
         }
         stage('Build docker image') {
