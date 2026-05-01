@@ -1,5 +1,8 @@
 pipeline {
     agent any 
+    environment {
+        DOCKER_USER = credentials('docker-cred')
+    }
     stages {
         stage('checkout Code') {
             steps {
@@ -8,7 +11,7 @@ pipeline {
         }
         stage('Build docker image') {
             steps {
-                sh 'docker build -t hemanthreddy147/apache:v1.0 .'
+                sh 'docker build -t $DOCKER_USER/apache:v1.0 .'
             }
         }
         stage('Push docker image to DockerHub') {
