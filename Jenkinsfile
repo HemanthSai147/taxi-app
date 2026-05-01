@@ -11,11 +11,6 @@ pipeline {
                 sh 'docker build -t hemanthreddy147/apache:v1.0 .'
             }
         }
-        stage('Build Docker image') {
-            steps {
-                sh 'docker build -t apache:v1.0 .'
-            }
-        }
         stage('Push docker image to DockerHub') {
             steps {
                 withCredentials([usernamePassword(
