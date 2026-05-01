@@ -1,7 +1,7 @@
 pipeline {
     agent any 
     environment {
-        DOCKER_USER = credentials('docker-cred')
+        DOCKER_CREDS = credentials('docker-cred')
     }
     stages {
         stage('checkout Code') {
@@ -11,7 +11,7 @@ pipeline {
         }
         stage('Build docker image') {
             steps {
-                sh 'docker build -t $DOCKER_USER/apache:v1.0 .'
+                sh 'docker build -t $DOCKER_CREDS_USR/apache:v1.0 .'
             }
         }
         stage('Push docker image to DockerHub') {
@@ -22,13 +22,13 @@ pipeline {
                     passwordVariable: 'DOCKER_PASS')]) {
                         sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
                         sh 'docker tag apache:v1.0 $DOCKER_USER/apache:v1.0'
-                        sh 'docker push $DOCKER_USER/apache:v1.0'
+                        sh 'docker push $DOCKER_CREDS_USR/apache:v1.0'
                     }
             }
         }  
         stage('Run docker container') {
             steps {
-                sh 'docker run -d -p 1212:80 --name apache-container $DOCKER_USER/apache:v1.0'
+                sh 'docker run -d -p 1212:80 --name apache-container $DOCKER_CREDS_USR/apache:v1.0'
             }
         }
     }
