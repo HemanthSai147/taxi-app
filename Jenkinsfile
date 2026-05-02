@@ -21,7 +21,7 @@ pipeline {
                     usernameVariable: 'DOCKER_USER',
                     passwordVariable: 'DOCKER_PASS')]) {
                         sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
-                        sh 'docker tag apache:v1.0 $DOCKER_USER/apache:$BUILD_NUMBER'
+                        sh 'docker tag apache:$BUILD_NUMBER $DOCKER_USER/apache:$BUILD_NUMBER'
                         sh 'docker push $DOCKER_CREDS_USR/apache:$BUILD_NUMBER'
                     }
             }
