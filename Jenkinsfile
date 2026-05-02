@@ -11,7 +11,7 @@ pipeline {
         }
         stage('Build docker image') {
             steps {
-                sh 'docker build -t $DOCKER_CREDS_USR/apache:v1.0 .'
+                sh 'docker build -t $DOCKER_CREDS_USR/apache:$BUILD_NUMBER .'
             }
         }
         stage('Push docker image to DockerHub') {
@@ -21,14 +21,14 @@ pipeline {
                     usernameVariable: 'DOCKER_USER',
                     passwordVariable: 'DOCKER_PASS')]) {
                         sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
-                        sh 'docker tag apache:v1.0 $DOCKER_USER/apache:v1.0'
-                        sh 'docker push $DOCKER_CREDS_USR/apache:v1.0'
+                        sh 'docker tag apache:v1.0 $DOCKER_USER/apache:$BUILD_NUMBER'
+                        sh 'docker push $DOCKER_CREDS_USR/apache:$BUILD_NUMBER'
                     }
             }
         }  
         stage('Run docker container') {
             steps {
-                sh 'docker run -d -p 1212:80 --name apache-container $DOCKER_CREDS_USR/apache:v1.0'
+                sh 'docker run -d -p 1212:80 --name apache-cont${BUILDNUMBER} $DOCKER_CREDS_USR/apache:$BUILD_NUMBER'
             }
         }
     }
