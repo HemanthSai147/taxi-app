@@ -1,34 +1,68 @@
 pipeline {
-    agent any 
+    agent any
+
     environment {
         DOCKER_CREDS = credentials('docker-cred')
+        IMAGE_NAME = "apache"
+        CONTAINER_NAME = "apache-cont"
+        PORT = "8081"
     }
+
     stages {
-        stage('checkout Code') {
+
+        stage('Checkout Code') {
             steps {
                 git branch: 'main', url: 'https://github.com/HemanthSai147/taxi-app.git'
             }
         }
-        stage('Build docker image') {
+
+        stage('Build Docker Image') {
             steps {
-                sh 'docker build -t apache:v$BUILD_NUMBER .'
+                sh """
+                    docker build -t ${IMAGE_NAME}:v${BUILD_NUMBER} .
+                """
             }
         }
-        stage('Push docker image to DockerHub') {
+
+        stage('Login & Push to DockerHub') {
             steps {
                 withCredentials([usernamePassword(
-                    credentialsId: 'docker-cred', 
+                    credentialsId: 'docker-cred',
                     usernameVariable: 'DOCKER_USER',
-                    passwordVariable: 'DOCKER_PASS')]) {
-                        sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
-                        sh 'docker tag apache:v$BUILD_NUMBER $DOCKER_USER/apache:v$BUILD_NUMBER'
-                        sh 'docker push $DOCKER_CREDS_USR/apache:v$BUILD_NUMBER'
-                    }
+                    passwordVariable: 'DOCKER_PASS'
+                )]) {
+                    sh """
+                        echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+
+                        docker tag ${IMAGE_NAME}:v${BUILD_NUMBER} $DOCKER_USER/${IMAGE_NAME}:v${BUILD_NUMBER}
+                        docker push $DOCKER_USER/${IMAGE_NAME}:v${BUILD_NUMBER}
+                    """
+                }
             }
-        }  
-        stage('Run docker container') {
+        }
+
+        stage('Cleanup Old Container') {
             steps {
-                sh 'docker run -d -p 1212:80 --name apache-cont${BUILDNUMBER} $DOCKER_CREDS_USR/apache:v$BUILD_NUMBER'
+                sh """
+                    docker rm -f ${CONTAINER_NAME} || true
+                """
+            }
+        }
+
+        stage('Deploy Container') {
+            steps {
+                sh """
+                    docker run -d -p ${PORT}:80 --name ${CONTAINER_NAME} \
+                    $DOCKER_USER/${IMAGE_NAME}:v${BUILD_NUMBER}
+                """
+            }
+        }
+
+        stage('Cleanup Images (Safe)') {
+            steps {
+                sh """
+                    docker image prune -f
+                """
             }
         }
     }
