@@ -1,69 +1,68 @@
 pipeline {
     agent any
-
+    
     environment {
-        DOCKER_CREDS = credentials('docker-cred')
-        IMAGE_NAME = "apache"
-        CONTAINER_NAME = "apache-cont"
-        PORT = "8081"
+        IMAGE_NAME = "taxi-app"
+        TAG = "v${BUILD_NUMBER}"
+        HOST_PORT = "${BUILD_NUMBER}"
+        REPOSITORY = "hemanthreddy147"
+        CONTAINER_NAME = "taxi-app-${BUILD_NUMBER}"  // Unique name per build
     }
-
+    
     stages {
-
-        stage('Checkout Code') {
+        stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/HemanthSai147/taxi-app.git'
+              git branch: 'main', url: 'https://github.com/HemanthSai147/taxi-app.git'
             }
         }
-
+        
         stage('Build Docker Image') {
             steps {
-                sh """
-                    docker build -t ${IMAGE_NAME}:v${BUILD_NUMBER} .
-                """
+                sh "docker build -t ${IMAGE_NAME}:latest ."
+                sh "docker tag ${IMAGE_NAME}:latest ${REPOSITORY}/${IMAGE_NAME}:${TAG}"
             }
         }
-
-        stage('Login & Push to DockerHub') {
+        
+        stage('Push to DockerHub') {
             steps {
-                withCredentials([usernamePassword(
-                    credentialsId: 'docker-cred',
-                    usernameVariable: 'DOCKER_USER',
-                    passwordVariable: 'DOCKER_PASS'
-                )]) {
+                script {
+                    withDockerRegistry(credentialsId: 'docker-cred') {
+                        sh "docker push ${REPOSITORY}/${IMAGE_NAME}:${TAG}"
+                    }
+                }
+            }
+        }
+        
+        stage('Deploy Container') {
+            steps {
+                script {
+                    // Stop and remove existing container with same name (if any)
                     sh """
-                        echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
-
-                        docker tag ${IMAGE_NAME}:v${BUILD_NUMBER} $DOCKER_USER/${IMAGE_NAME}:v${BUILD_NUMBER}
-                        docker push $DOCKER_USER/${IMAGE_NAME}:v${BUILD_NUMBER}
+                        docker stop ${CONTAINER_NAME} || true
+                        docker rm ${CONTAINER_NAME} || true
+                        docker run -d \
+                            --name ${CONTAINER_NAME} \
+                            -p ${HOST_PORT}:80 \
+                            --restart unless-stopped \
+                            ${REPOSITORY}/${IMAGE_NAME}:${TAG}
                     """
                 }
             }
         }
-
-        stage('Cleanup Old Container') {
-            steps {
-                sh """
-                    docker rm -f ${CONTAINER_NAME} || true
-                """
+    }
+    
+    post {
+        always {
+            script {
+                // Clean up dangling images
+                sh "docker image prune -f || true"
             }
         }
-
-        stage('Deploy Container') {
-            steps {
-                sh """
-                    docker run -d -p ${PORT}:80 --name ${CONTAINER_NAME} \
-                    $DOCKER_USER/${IMAGE_NAME}:v${BUILD_NUMBER}
-                """
-            }
+        success {
+            echo "✅ Deployment successful! App running on port ${HOST_PORT}"
         }
-
-        stage('Cleanup Images (Safe)') {
-            steps {
-                sh """
-                    docker image prune -f
-                """
-            }
+        failure {
+            echo "❌ Pipeline failed! Check logs for details."
         }
     }
 }
